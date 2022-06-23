@@ -9,7 +9,7 @@ FSTR_DB_PORT = os.environ.get('FSTR_DB_PORT')
 FSTR_DB_LOGIN = os.environ.get('FSTR_DB_LOGIN')
 FSTR_DB_PASS = os.environ.get('FSTR_DB_PASS')
 
-DATABASE_URL = f"postgresql://{FSTR_DB_LOGIN}:{FSTR_DB_PASS}@{FSTR_DB_HOST}:{FSTR_DB_PORT}/HakatonSK"
+DATABASE_URL = f"postgresql://{FSTR_DB_LOGIN}:{FSTR_DB_PASS}@{FSTR_DB_HOST}:{FSTR_DB_PORT}/pereval"
 
 engine = create_engine(DATABASE_URL)
 
@@ -18,6 +18,10 @@ metadata.reflect(engine)
 Base = automap_base(metadata=metadata)
 Base.prepare()
 
+Users = Base.classes.pereval_users
+Coords = Base.classes.pereval_coords
+Level = Base.classes.pereval_level
+Foto = Base.classes.pereval_foto
 Added = Base.classes.pereval_added
 Areas = Base.classes.pereval_areas
 Images = Base.classes.pereval_images

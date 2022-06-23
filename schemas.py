@@ -3,19 +3,6 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-# таблица pereval_images
-class ImagesBase(BaseModel):
-    date_added: datetime.datetime
-    img: Optional[bytes] = None
-
-
-class ImagesCreate(ImagesBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-
 # для AddedRaw, то что получаем (JSON):
 class User(BaseModel):
     id: str
@@ -61,23 +48,9 @@ class AddedRaw(BaseModel):
     images: Optional[Images] = None
 
 
-# столбец raw_data (table pereval_added)
-class RawData(BaseModel):
-    pereval_id: int
-    beautyTitle: str
-    title: str
-    other_titles: Optional[str] = None
-    connect: Optional[str] = None
-    user: dict
-    coords: dict
-    type: str = 'pass'
-    level: dict
-
-
 # MVP1: отправить информацию об объекте на сервер
 class AddedBase(BaseModel):
     date_added: datetime.datetime
-    raw_data: RawData = Field()
     images: Optional[dict] = None
     status: Optional[str] = None
 
@@ -88,6 +61,19 @@ class AddedCreate(AddedBase):
 
 class Added(AddedBase):
     pass
+
+    class Config:
+        orm_mode = True
+
+
+# таблица pereval_images
+class ImagesBase(BaseModel):
+    date_added: datetime.datetime
+    img: Optional[bytes] = None
+
+
+class ImagesCreate(ImagesBase):
+    id: int
 
     class Config:
         orm_mode = True
