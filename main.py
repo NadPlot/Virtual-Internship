@@ -1,8 +1,8 @@
 from fastapi import Depends, FastAPI
+from typing import Union
 from sqlalchemy.orm import Session
 import crud, schemas
-from database import SessionLocal, engine, Added
-from fastapi import FastAPI
+from database import SessionLocal, engine, Added, Users
 
 
 description = """
@@ -35,7 +35,6 @@ async def root():
 
 
 # получить одну запись (перевал) по её id.
-@app.get("/submitData/{id}/", response_model=schemas.Added)
-def read_added_id(id: int, db: Session = Depends(get_db)):
-    added = crud.get_added_id(db, id=id)
-    return added
+@app.get("/pereval/{id}/", response_model=schemas.Added)
+def read_added(id: int, db: Session = Depends(get_db)):
+    return crud.get_pereval(db, id=id)

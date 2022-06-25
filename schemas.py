@@ -3,9 +3,8 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-# для AddedRaw, то что получаем (JSON):
-class User(BaseModel):
-    id: str
+class UserBase(BaseModel):
+    id: int
     email: str
     phone: Optional[int] = None
     fam: Optional[str] = None
@@ -13,66 +12,106 @@ class User(BaseModel):
     otc: Optional[str] = None
 
 
-class Coords(BaseModel):
+class UserCreate(UserBase):
+    pass
+
+
+class User(UserBase):
+    id: int
+    
+    class Config:
+        orm_mode = True
+
+
+class CoordsBase(BaseModel):
+    id: int
     latitude: str
     longitude: str
     height: str
 
 
-class Level(BaseModel):
+class CoordsCreate(CoordsBase):
+    pass
+
+
+class Coords(CoordsBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class LevelBase(BaseModel):
+    id: int
     winter: Optional[str] = None
     summer: Optional[str] = None
     autumn: Optional[str] = None
     spring: Optional[str] = None
 
 
-class Images(BaseModel):
-    sedlo: Optional[list] = None
-    Nord: Optional[list] = None
-    West: Optional[list] = None
-    South: Optional[list] = None
-    East: Optional[list] = None
+class LevelCreate(LevelBase):
+    pass
 
-# поля, отправленные в теле запроса (JSON)
-class AddedRaw(BaseModel):
+
+class Level(LevelBase):
     id: int
-    beautyTitle: str
-    title: str
-    other_titles: Optional[str] = None
-    connect: Optional[str]
-    add_time: str
-    user: User = Field()
-    coords: Coords = Field()
-    type: Optional[str] = 'pass'
-    level: Level = Field()
-    images: Optional[Images] = None
+    
+    class Config:
+        orm_mode = True
 
 
-# MVP1: отправить информацию об объекте на сервер
 class AddedBase(BaseModel):
-    date_added: datetime.datetime
-    images: Optional[dict] = None
+    add_time: datetime.datetime
+    beauty_title: str
+    title: str
+    other_titles: str
+    connect: Optional[str]
+    user_id: int
+    coords_id: int
+    level_id: int
     status: Optional[str] = None
 
 
 class AddedCreate(AddedBase):
-    id: int
+    pass
 
 
 class Added(AddedBase):
-    pass
+    id: int
+    user_id: int
+    coords_id: int
+    level_id: int
 
     class Config:
         orm_mode = True
 
 
-# таблица pereval_images
 class ImagesBase(BaseModel):
+    id: int
+    pereval_id: int
+    foto_id: int
+
+
+class ImgesCreate(ImagesBase):
+    pass
+
+
+class Images(ImagesBase):
+    id: int
+    pereval_id: Added = Field()
+
+
+class FotoBase(BaseModel):
+    id: int
     date_added: datetime.datetime
     img: Optional[bytes] = None
 
 
 class ImagesCreate(ImagesBase):
+    pass
+
+
+class Images(ImagesBase):
     id: int
 
     class Config:
