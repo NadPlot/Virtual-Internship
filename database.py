@@ -13,11 +13,13 @@ DATABASE_URL = f"postgresql://{FSTR_DB_LOGIN}:{FSTR_DB_PASS}@{FSTR_DB_HOST}:{FST
 
 engine = create_engine(DATABASE_URL)
 
+# подключение к существующей БД (была создана отдельно)
 metadata = MetaData()
 metadata.reflect(engine)
 Base = automap_base(metadata=metadata)
 Base.prepare()
 
+# Определено в соответствии с таблицами БД
 Users = Base.classes.pereval_users
 Coords = Base.classes.pereval_coords
 Level = Base.classes.pereval_level

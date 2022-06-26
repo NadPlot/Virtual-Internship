@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from database import Added, Users, Coords, Level, Foto
-from schemas import UsersBase, CoordsBase, LevelBase, FotoBase
+from database import Added, Users, Coords, Level, Foto, Images
+from schemas import UsersBase, CoordsBase, LevelBase, FotoBase, AddedRaw
 
 
 # получить одну запись (перевал) по её id
@@ -13,7 +13,7 @@ def get_user(db: Session, id: int):
     return db.query(Users).filter(Users.id == id).first()
 
 
-# получить user по email
+# получить user по email (для проверки есть ли user с таким email)
 def get_user_by_email(db: Session, email: str):
     return db.query(Users).filter(Users.email == email).first()
 
@@ -47,3 +47,31 @@ def add_foto(db: Session, foto: FotoBase):
     db.add(foto)
     db.commit()
     return foto.id
+
+
+def create_pereval(db: Session, pereval: AddedRaw, user_id: int, coords_id: int, level_id: int):
+    new_pereval = Added(
+        add_time=pereval.add_time,
+        beauty_title=pereval.beauty_title,
+        title=pereval.title,
+        other_titles=pereval.other_titles,
+        connect=pereval.connect,
+        user_id=user_id,
+        coords_id=coords_id,
+        level_id=level_id,
+        status="new"
+    )
+    db.add(new_pereval)
+    db.commit()
+    return new_pereval
+
+
+# Добавить id в таблицу связей перевала и изображений
+def add_relation(db: Session, pereval_id: int, foto_id: int):
+    new_relation = Images(
+        pereval_id=pereval_id,
+        foto_id=foto_id
+    )
+    db.add(new_relation)
+    db.commit()
+    return new_relation

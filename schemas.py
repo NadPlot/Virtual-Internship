@@ -5,9 +5,9 @@ from pydantic import BaseModel, Field
 
 class UsersBase(BaseModel):
     email: str
-    phone: Optional[int] = None
-    fam: Optional[str] = None
-    name: Optional[str] = None
+    phone: int
+    fam: str
+    name: str
     otc: Optional[str] = None
     
     class Config:
@@ -35,7 +35,7 @@ class LevelBase(BaseModel):
 
 class FotoRaw(BaseModel):
     data: Optional[bytes] = None
-    title: str
+    title: Optional[str] = None
 
     class Config:
         orm_mode = True
@@ -58,7 +58,7 @@ class AddedBase(BaseModel):
     add_time: datetime.datetime
     beauty_title: str
     title: str
-    other_titles: str
+    other_titles: Optional[str]
     connect: Optional[str]
     user_id: int
     coords_id: int
@@ -72,7 +72,7 @@ class AddedBase(BaseModel):
 class FotoBase(BaseModel):
     date_added: datetime.datetime
     img: Optional[bytes] = None
-    title: str
+    title: Optional[str] = None
 
     class Config:
         orm_mode = True
