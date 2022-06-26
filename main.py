@@ -42,8 +42,25 @@ async def root():
 def read_pereval(id: int, db: Session = Depends(get_db)):
     return crud.get_pereval(db, id=id)
 
+
 # отправить данные о перевале
-@app.post("/submitData/", response_model=schemas.UsersBase)
+@app.post("/submitData/", response_model=schemas.AddedBase)
 def add_pereval(raw_data: schemas.AddedRaw, db: Session = Depends(get_db)):
-    new_user = crud.create_user(db, user=raw_data.user)
-    return new_user
+    user = crud.create_user(db, user=raw_data.user)
+    coords = crud.create_coords(db, coords=raw_data.coords)
+    level = crud.create_level(db, level=raw_data.level)
+    foto = crud.add_foto(db, foto=raw_data.images)
+    pereval = Added(
+        add_time=raw_data.add_time,
+        beauty_title=raw_data.beauty_title,
+        title=raw_data.title,
+        other_titles=raw_data.other_titles,
+        connect=raw_data.connect,
+        user_id=user,
+        coords_id=coords,
+        level_id=level,
+        status="new"
+    )
+    db.add(pereval)
+    db.commit()
+    return pereval  # {"status": 200, "message": "Отправлено успешно", "id": pereval.id}

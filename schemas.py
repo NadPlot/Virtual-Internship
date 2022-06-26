@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
@@ -33,6 +33,14 @@ class LevelBase(BaseModel):
         orm_mode = True
 
 
+class FotoRaw(BaseModel):
+    data: Optional[bytes] = None
+    title: str
+
+    class Config:
+        orm_mode = True
+
+
 # поля, отправленные в теле запроса (JSON)
 class AddedRaw(BaseModel):
     beauty_title: str
@@ -43,7 +51,7 @@ class AddedRaw(BaseModel):
     user: UsersBase = Field()
     coords: CoordsBase = Field()
     level: LevelBase = Field()
-    images: list
+    images: List[FotoRaw]
 
 
 class AddedBase(BaseModel):
@@ -65,6 +73,9 @@ class FotoBase(BaseModel):
     date_added: datetime.datetime
     img: Optional[bytes] = None
     title: str
+
+    class Config:
+        orm_mode = True
 
 
 class ImagesBase(BaseModel):
