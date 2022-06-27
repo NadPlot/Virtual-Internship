@@ -1,10 +1,10 @@
 import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, EmailStr
 
 
 class UsersBase(BaseModel):
-    email: str
+    email: EmailStr
     phone: int
     fam: str
     name: str
@@ -48,9 +48,9 @@ class AddedRaw(BaseModel):
     other_titles: Optional[str] = None
     connect: Optional[str]
     add_time: str
-    user: UsersBase = Field()
-    coords: CoordsBase = Field()
-    level: LevelBase = Field()
+    user: UsersBase
+    coords: CoordsBase
+    level: LevelBase
     images: List[FotoRaw]
 
 

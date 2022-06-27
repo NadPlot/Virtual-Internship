@@ -1,8 +1,9 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 import crud, schemas
-from database import SessionLocal, engine, Added, Users
+from database import SessionLocal, engine
+from exceptions import UserExistsException, PerevalExistsException
 
 
 description = """
@@ -41,7 +42,7 @@ async def root():
 def read_pereval(id: int, db: Session = Depends(get_db)):
     pereval = crud.get_pereval(db, id=id)
     if not pereval:
-        raise HTTPException(status_code=400, detail={"status": 400, "message": "Перевал не найден", "id": id})
+        raise PerevalExistsException(id=id)
     return crud.get_pereval(db, id=id)
 
 
@@ -50,7 +51,7 @@ def read_pereval(id: int, db: Session = Depends(get_db)):
 def add_pereval(raw_data: schemas.AddedRaw, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=raw_data.user.email)
     if db_user:
-        raise HTTPException(status_code=400, detail={"status": 400, "message": "Пользователь с таким email уже существует", "id": db_user.id})
+        raise UserExistsException(email=db_user.email)
 
     user = crud.create_user(db, user=raw_data.user)
     coords = crud.create_coords(db, coords=raw_data.coords)
@@ -59,3 +60,19 @@ def add_pereval(raw_data: schemas.AddedRaw, db: Session = Depends(get_db)):
     pereval = crud.create_pereval(db, raw_data, user, coords, level)
     images = crud.add_relation(db, pereval.id, foto)
     return JSONResponse(status_code=200, content={"status": 200, "message": "Отправлено успешно", "id": pereval.id})
+
+
+@app.exception_handler(UserExistsException)
+async def user_exists_handler(request: Request, exc: UserExistsException):
+    return JSONResponse(
+        status_code=400,
+        content={"status" : 400, "message": f"Пользователь с {exc.email} уже существует"}
+    )
+
+
+@app.exception_handler(PerevalExistsException)
+async def pereval_exists_handler(request: Request, exc: PerevalExistsException):
+    return JSONResponse(
+        status_code=400,
+        content={"status": 400, "message": "Перевал не найден", "id": f"{exc.id}"}
+    )
