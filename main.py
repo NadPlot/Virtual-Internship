@@ -43,12 +43,13 @@ def read_pereval(id: int, db: Session = Depends(get_db)):
     return crud.get_pereval(db, id=id)
 
 
-# получить перевал(ы) по почте пользователя (НЕ ГОТОВ)
+# получить перевал(ы) по почте пользователя
 @app.get("/submitData/{email}", response_model=schemas.AddedList)
 def get_pereval_list_by_user_email(email: str, db: Session = Depends(get_db)):
-    list = crud.get_pereval_by_user_email(db, email=email)
-    if list["user"] == None:
+    db_user = crud.get_user_by_email(db, email=email)
+    if not db_user:
         raise EmailNotExistsException(email=email)
+    list = crud.get_pereval_by_user_email(db, email=email)
     return list
 
 

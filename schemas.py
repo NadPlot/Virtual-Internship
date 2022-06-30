@@ -101,18 +101,20 @@ class ImagesBase(BaseModel):
     foto_id: int
 
 
-# вывод для запроса перевалов по email
-class User(BaseModel):
-    email: EmailStr
-    fam: str
+# вывод для запроса списка перевалов по email
+class Pereval(BaseModel):
+    id: int
+    title: str
+    other_titles: Optional[str]
+    add_time: datetime.datetime
+    status: str
 
     class Config:
         orm_mode = True
 
 
 class AddedList(BaseModel):
-    user: User
-    #pereval: int
+    pereval: List[Pereval]
 
     class Config:
         orm_mode = True

@@ -7,12 +7,12 @@ from exceptions import PerevalExistsException
 
 # получить одну запись (перевал) по её id
 def get_pereval(db: Session, id: int):
-    pereval = db.query(Added).filter(Added.id == id).first() # получаем данные о перевале
+    pereval = db.query(Added).filter(Added.id == id).first()  # получаем данные о перевале
     if not pereval:
         raise PerevalExistsException(id=id)
-    user = db.query(Users).filter(Users.id == pereval.user_id).first() # получаем данные о пользователе
-    coords = db.query(Coords).filter(Coords.id == pereval.coords_id).first() # получаем данные о координатах
-    level = db.query(Level).filter(Level.id == pereval.level_id).first() # получаем данные об уровнях
+    user = db.query(Users).filter(Users.id == pereval.user_id).first()  # получаем данные о пользователе
+    coords = db.query(Coords).filter(Coords.id == pereval.coords_id).first()  # получаем данные о координатах
+    level = db.query(Level).filter(Level.id == pereval.level_id).first()  # получаем данные об уровнях
     result = jsonable_encoder(pereval)
     result['user'] = jsonable_encoder(user)
     result['coords'] = jsonable_encoder(coords)
@@ -27,9 +27,13 @@ def get_user(db: Session, id: int):
 
 # получить данные о перевалах по почте user
 def get_pereval_by_user_email(db: Session, email: str):
-    get_user = db.query(Users).filter(Users.email == email).first()
-    user = {"user": jsonable_encoder(get_user)}
-    return user
+    get_user = db.query(Users).filter(Users.email == email).first()  # получить данные о пользователе
+    get_all_pereval = db.query(Added).filter(Added.user_id == get_user.id).all()  # получить перевалы
+    list = []
+    for obj in get_all_pereval:
+        list.append(jsonable_encoder(obj))
+    pereval = {"pereval": list}
+    return pereval
 
 
 # получить user по email (для проверки есть ли user с таким email)
