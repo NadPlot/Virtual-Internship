@@ -53,6 +53,7 @@ PATCH /submitData/<id> - отредактировать данные о пере
     }
 
 Если перевала нет в БД, будет сообщение: "Перевал не найден".
+
 2. Метод POST/submitData/(принимает JSON в теле запроса) - отправка
 данных по перевалу.
 
@@ -86,6 +87,7 @@ PATCH /submitData/<id> - отредактировать данные о пере
        {"data": "image2", "title": "Подъем"}]
     }
 В случае успешной отправки будет сообщение "Отправлено успешно".
+
 3. Метод GET/submitData/email/{email} - по почте пользователя выводит краткую
 информацию о всех добавленых перевалах, включая статус.
 Пример запроса: http://127.0.0.1:8000/submitData/email/user@email.ltd 
@@ -110,38 +112,39 @@ PATCH /submitData/<id> - отредактировать данные о пере
 4. Метод PATCH/submitData/{id} - отредактировать существующую запись
 (замена), если она в статусе new.
 Редактировать можно все поля, кроме тех, что содержат в себе ФИО,
-адрес почты и номер телефона. Метод принимает JSON,
-который содержит статус и id перевала.
+адрес почты и номер телефона. Метод принимает тот же JSON,
+что и при отправке данных нового перевала.
 
 Пример JSON:
 
     {
-      "id": 12,
-      "add_time": "2022-07-01T09:01:05.602Z",
-      "beauty_title": "string",
-      "title": "string",
-      "other_titles": "string",
-      "connect": "string",
+      "beauty_title": "пер.",
+      "title": "Пхия",
+      "other_titles": "Триев",
+      "connect": "", // что соединяет, текстовое поле
+      "add_time": "2021-09-22 13:18:13",
       "user": {
-        "email": "user@example.com",
-        "phone": 0,
-        "fam": "string",
-        "name": "string",
-        "otc": "string"
+        "email": "qwerty@mail.ru",
+        "phone": "75555555",
+        "fam": "Пупкин",
+        "name": "Василий",
+        "otc": "Иванович"
       },
       "coords": {
-        "latitude": "string",
-        "longitude": "string",
-        "height": "string"
+        "latitude": "45.3842",
+        "longitude": "7.1525",
+        "height": "1200"
       },
       "level": {
-        "winter": "string",
-        "summer": "string",
-        "autumn": "string",
-        "spring": "string"
+        "winter": "",
+        "summer": "1A",
+        "autumn": "1A",
+        "spring": ""
       },
-      "status": "new"
+      "images": [{"data": "image1", "title": "Сeдловина"},
+       {"data": "image2", "title": "Подъем"}]
     }
+
 После внесения изменений в запись, будет сообщение об успешной отправке
 
     {
