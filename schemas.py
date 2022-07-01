@@ -55,7 +55,7 @@ class AddedRaw(BaseModel):
     images: List[FotoRaw]
 
 
-# запись таблица pereval_added
+# запись и редактирование, таблица pereval_added
 class AddedBase(BaseModel):
     add_time: datetime.datetime
     beauty_title: str
@@ -71,8 +71,9 @@ class AddedBase(BaseModel):
         orm_mode = True
 
 
-# чтение таблица pereval_added
+# чтение таблица pereval_added, схема для JSON редактировать перевал
 class AddedRead(BaseModel):
+    id: int
     add_time: datetime.datetime
     beauty_title: str
     title: str

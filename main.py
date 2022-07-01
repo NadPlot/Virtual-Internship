@@ -32,19 +32,24 @@ def get_db():
 @app.get("/")
 async def root():
     return {
-    "method GET": "/pereval/{id} - получить данные о перевале по id",
+    "method GET by id": "/pereval/{id} - получить данные о перевале по id",
     "method POST": "/submitData/ - отправить данные о перевале (принимает JSON)",
+    "method GET by email": "submitData/email/{email] - по email получить список отправленных перевалов",
+    "method PATCH": "submitData/{id} - отредактировать запись о перевале, принимает JSON"
 }
 
 
 # получить одну запись (перевал) по id.
 @app.get("/pereval/{id}/", response_model=schemas.AddedRead)
 def read_pereval(id: int, db: Session = Depends(get_db)):
-    return crud.get_pereval(db, id=id)
+    pereval = crud.get_pereval(db, id=id)
+    if not pereval:
+        raise PerevalExistsException(id)
+    return pereval
 
 
 # получить перевал(ы) по почте пользователя
-@app.get("/submitData/{email}", response_model=schemas.AddedList)
+@app.get("/submitData/email/{email}", response_model=schemas.AddedList)
 def get_pereval_list_by_user_email(email: str, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=email)
     if not db_user:
@@ -53,7 +58,7 @@ def get_pereval_list_by_user_email(email: str, db: Session = Depends(get_db)):
     return list
 
 
-# отправить данные о перевале (ДОБАВИТЬ ПРОВЕРКУ ПОДКЛ К БД)
+# отправить данные о перевале
 @app.post("/submitData/", response_model=schemas.AddedBase)
 def add_pereval(raw_data: schemas.AddedRaw, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=raw_data.user.email)
@@ -68,6 +73,29 @@ def add_pereval(raw_data: schemas.AddedRaw, db: Session = Depends(get_db)):
     pereval = crud.create_pereval(db, raw_data, user, coords, level)
     images = crud.add_relation(db, pereval.id, foto)
     return JSONResponse(status_code=200, content={"status": 200, "message": "Отправлено успешно", "id": pereval.id})
+
+
+# отредактировать отправленные данные, если статус new
+@app.patch("/submitData/{id}", response_model=schemas.AddedBase)
+def edit_pereval(id: int, pereval: schemas.AddedRaw, db: Session = Depends(get_db)):
+    get_pereval = crud.get_pereval(db, id=id)  # получаем перевал по id из БД
+    if not get_pereval:
+        raise PerevalExistsException(id)
+    if get_pereval['status'] == "new":  # проверяем статус перевала
+        crud.update_pereval(db, pereval, id)
+    else:
+        list_status = {
+            "new": "новый",
+            "pending": "в работе",
+            "accepted": "принят",
+            "rejected": "отклонен"
+        }
+        status = get_pereval['status']  # получаем статус, например new
+        for keys in list_status:
+            if keys == status:
+                st = list_status.get(f"{status}")
+                return JSONResponse(status_code=400, content={"state": 0, "message": f"Невозможно внести изменения. Статус перевала: {st}"})
+    return JSONResponse(status_code=200, content={"state": 1, "message": "Отправлено успешно"})
 
 
 @app.exception_handler(PerevalExistsException)
