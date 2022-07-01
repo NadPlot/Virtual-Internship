@@ -1,8 +1,9 @@
 import datetime
-from typing import Optional, List
+from typing import Optional, List, Union
 from pydantic import BaseModel, Field, EmailStr
 
 
+# запись в таблицу pereval_added
 class UsersBase(BaseModel):
     email: EmailStr
     phone: int
@@ -41,7 +42,7 @@ class FotoRaw(BaseModel):
         orm_mode = True
 
 
-# поля, отправленные в теле запроса (JSON)
+# поля, отправленные в теле запроса (JSON) - отправка в БД
 class AddedRaw(BaseModel):
     beauty_title: str
     title: str
@@ -54,6 +55,7 @@ class AddedRaw(BaseModel):
     images: List[FotoRaw]
 
 
+# запись и редактирование, таблица pereval_added
 class AddedBase(BaseModel):
     add_time: datetime.datetime
     beauty_title: str
@@ -64,6 +66,23 @@ class AddedBase(BaseModel):
     coords_id: int
     level_id: int
     status: Optional[str] = None
+
+    class Config:
+        orm_mode = True
+
+
+# чтение таблица pereval_added, схема для JSON редактировать перевал
+class AddedRead(BaseModel):
+    id: int
+    add_time: datetime.datetime
+    beauty_title: str
+    title: str
+    other_titles: Optional[str]
+    connect: Optional[str]
+    user: UsersBase
+    coords: CoordsBase
+    level: LevelBase
+    status: str
 
     class Config:
         orm_mode = True
@@ -81,3 +100,22 @@ class FotoBase(BaseModel):
 class ImagesBase(BaseModel):
     pereval_id: int
     foto_id: int
+
+
+# вывод для запроса списка перевалов по email
+class Pereval(BaseModel):
+    id: int
+    title: str
+    other_titles: Optional[str]
+    add_time: datetime.datetime
+    status: str
+
+    class Config:
+        orm_mode = True
+
+
+class AddedList(BaseModel):
+    pereval: List[Pereval]
+
+    class Config:
+        orm_mode = True
