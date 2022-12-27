@@ -84,9 +84,9 @@ INSERT INTO "public"."pereval_users" ("email", "fam", "name", "otc", "phone") VA
 INSERT INTO "public"."pereval_coords" ("latitude", "longitude", "height") VALUES (45.3842, 7.1525, 1200);
 INSERT INTO "public"."pereval_level" ("winter", "summer", "autumn", "spring") VALUES ('', '1A', '1A', '');
 INSERT INTO "public"."pereval_added" ("add_time", "beauty_title", "title", "other_titles", "user_id", "coords_id", "level_id", "status") 
-    VALUES ('2021-09-22 13:18:13', 'пер.', 'Пхия', 'Триев', 3, 3, 1, 'new');
+    VALUES ('2021-09-22 13:18:13', 'пер.', 'Пхия', 'Триев', 1, 1, 1, 'new');
 
-INSERT INTO "public"."pereval_images" ("pereval_id", "foto_id") VALUES (2, 3);
+INSERT INTO "public"."pereval_images" ("pereval_id", "foto_id") VALUES (1, 1);
 
 
 

@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from fastapi.encoders import jsonable_encoder
-from database import Added, Users, Coords, Level, Foto, Images
-from schemas import UsersBase, CoordsBase, LevelBase, FotoBase, AddedRaw, AddedRead
-from exceptions import PerevalExistsException
+from app.database import Added, Users, Coords, Level, Foto, Images
+from app.schemas import UsersBase, CoordsBase, LevelBase, FotoBase, AddedRaw, AddedRead
+from app.exceptions import PerevalExistsException
 
 
 # получить одну запись (перевал) по её id

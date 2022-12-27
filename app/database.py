@@ -1,20 +1,13 @@
-import os
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 
+from .config import settings
 
-FSTR_DB_HOST = os.environ.get('FSTR_DB_HOST')
-FSTR_DB_PORT = os.environ.get('FSTR_DB_PORT')
-FSTR_DB_LOGIN = os.environ.get('FSTR_DB_LOGIN')
-FSTR_DB_PASS = os.environ.get('FSTR_DB_PASS')
-FSTR_DB_NAME = os.environ.get('FSTR_DB_NAME')
 
-DATABASE_URL = f"postgresql://{FSTR_DB_LOGIN}:{FSTR_DB_PASS}@{FSTR_DB_HOST}:{FSTR_DB_PORT}/{FSTR_DB_NAME}"
+engine = create_engine(settings.db_url)
 
-engine = create_engine(DATABASE_URL)
-
-# подключение к существующей БД (была создана отдельно)
+# подключение к существующей БД (создается при запуске docker-compose)
 metadata = MetaData()
 metadata.reflect(engine)
 Base = automap_base(metadata=metadata)
