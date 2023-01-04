@@ -2,13 +2,14 @@ from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.schemas import AddedRead, AddedList, AddedBase, AddedRaw
-from app.crud import get_pereval, get_user_by_email, get_pereval_by_user_email, create_user, create_coords, create_level, add_foto, create_pereval, add_relation, update_pereval
 from app.database import SessionLocal, engine
 from app.exceptions import PerevalExistsException, EmailNotExistsException
+from app.crud import get_pereval, get_user_by_email, get_pereval_by_user_email, create_user, create_coords, create_level, add_foto, create_pereval, add_relation, update_pereval
 
 
 description = """
-На сайте https://pereval.online/ ФСТР ведёт базу горных перевалов, которая пополняется туристами.
+На сайте https://pereval.online/ ФСТР ведёт базу горных перевалов,
+которая пополняется туристами.
 Проект ФСТР "Перевал Online" создан специально для горных путешественников.
 
 ## Отправка информации на сервер о перевале
@@ -30,18 +31,23 @@ def get_db():
         db.close()
 
 
-@app.get("/")
+@app.get("/", description='Доступные методы')
 async def root():
     return {
-    "method GET by id": "/pereval/{id} - получить данные о перевале по id",
-    "method POST": "/submitData/ - отправить данные о перевале (принимает JSON)",
-    "method GET by email": "submitData/email/{email] - по email получить список отправленных перевалов",
-    "method PATCH": "submitData/{id} - отредактировать запись о перевале, принимает JSON"
+    "GET by id": "/pereval/{id} - данные о перевале по id",
+    "POST": "/submitData/ - отправить данные о перевале (принимает JSON)",
+    "GET by email": "submitData/email/{email] - по email получить список отправленных перевалов",
+    "PATCH": "submitData/{id} - отредактировать запись о перевале, принимает JSON"
 }
 
 
 # получить одну запись (перевал) по id.
-@app.get("/pereval/{id}/", response_model=AddedRead)
+@app.get(
+    "/pereval/{id}/",
+    response_model=AddedRead,
+    description='Получить данные о перевале по его id',
+    name='Перевал по id'
+)
 def read_pereval(id: int, db: Session = Depends(get_db)):
     pereval = get_pereval(db, id=id)
     if not pereval:
@@ -50,7 +56,12 @@ def read_pereval(id: int, db: Session = Depends(get_db)):
 
 
 # получить перевал(ы) по почте пользователя
-@app.get("/submitData/email/{email}", response_model=AddedList)
+@app.get(
+    "/submitData/email/{email}",
+    response_model=AddedList,
+    description='Получить перевал по почте пользователя',
+    name='Перевал по email'
+)
 def get_pereval_list_by_user_email(email: str, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=email)
     if not db_user:
