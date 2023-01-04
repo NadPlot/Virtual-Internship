@@ -41,8 +41,8 @@ CREATE SEQUENCE IF NOT EXISTS pereval_foto_id_seq;
 CREATE TABLE "public"."pereval_foto"(
     "id" int4 NOT NULL DEFAULT nextval('pereval_foto_id_seq'::regclass),
     "date_added" timestamp DEFAULT now(),
-    "img" bytea,
     "title" text,
+    "img" bytea,
     PRIMARY KEY ("id")
 );
 
@@ -87,6 +87,6 @@ INSERT INTO "public"."pereval_coords" ("latitude", "longitude", "height") VALUES
 INSERT INTO "public"."pereval_level" ("winter", "summer", "autumn", "spring") VALUES ('', '1A', '1A', '');
 INSERT INTO "public"."pereval_added" ("add_time", "beauty_title", "title", "other_titles", "user_id", "coords_id", "level_id", "status") 
     VALUES ('2021-09-22 13:18:13', 'пер.', 'Пхия', 'Триев', 1, 1, 1, 'new');
-INSERT INTO "public"."pereval_foto" ("date_added", "img") VALUES ('2021-09-22 13:18:13', 'some img');
+INSERT INTO "public"."pereval_foto" ("date_added", "title", "img") VALUES ('2021-09-22 13:18:13', 'some title', 'some img');
 INSERT INTO "public"."pereval_images" ("pereval_id", "foto_id") VALUES (1, 1);
 
