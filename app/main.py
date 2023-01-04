@@ -41,7 +41,6 @@ async def root():
 }
 
 
-# получить одну запись (перевал) по id.
 @app.get(
     "/pereval/{id}/",
     response_model=AddedRead,
@@ -55,7 +54,6 @@ def read_pereval(id: int, db: Session = Depends(get_db)):
     return pereval
 
 
-# получить перевал(ы) по почте пользователя
 @app.get(
     "/submitData/email/{email}",
     response_model=AddedList,
@@ -70,8 +68,12 @@ def get_pereval_list_by_user_email(email: str, db: Session = Depends(get_db)):
     return list
 
 
-# отправить данные о перевале
-@app.post("/submitData/", response_model=AddedBase)
+@app.post(
+    "/submitData/",
+    response_model=AddedBase,
+    description='Отправить данные о перевале (JSON)',
+    name='Отправить перевал'
+)
 def add_pereval(raw_data: AddedRaw, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=raw_data.user.email)
     if db_user:
@@ -84,16 +86,27 @@ def add_pereval(raw_data: AddedRaw, db: Session = Depends(get_db)):
     foto = add_foto(db, foto=raw_data.images)
     pereval = create_pereval(db, raw_data, user, coords, level)
     images = add_relation(db, pereval.id, foto)
-    return JSONResponse(status_code=200, content={"status": 200, "message": "Отправлено успешно", "id": pereval.id})
+    return JSONResponse(
+        status_code=200,
+        content={
+            "status": 200,
+            "message": "Отправлено успешно",
+            "id": pereval.id
+        }
+    )
 
 
-# отредактировать отправленные данные, если статус new
-@app.patch("/submitData/{id}", response_model=AddedBase)
+@app.patch(
+    "/submitData/{id}",
+    response_model=AddedBase,
+    description='Отредактировать данные отправленного перевала, если статус new',
+    name='Отредактировать перевал'
+)
 def edit_pereval(id: int, pereval: AddedRaw, db: Session = Depends(get_db)):
-    get_pereval = get_pereval(db, id=id)  # получаем перевал по id из БД
-    if not get_pereval:
+    db_pereval = get_pereval(db, id=id)  # получаем перевал по id из БД
+    if not db_pereval:
         raise PerevalExistsException(id)
-    if get_pereval['status'] == "new":  # проверяем статус перевала
+    if db_pereval['status'] == "new":  # проверяем статус перевала
         update_pereval(db, pereval, id)
     else:
         list_status = {
@@ -102,19 +115,28 @@ def edit_pereval(id: int, pereval: AddedRaw, db: Session = Depends(get_db)):
             "accepted": "принят",
             "rejected": "отклонен"
         }
-        status = get_pereval['status']  # получаем статус, например new
+        status = db_pereval['status']  # получаем статус, например new
         for keys in list_status:
             if keys == status:
                 st = list_status.get(f"{status}")
-                return JSONResponse(status_code=400, content={"state": 0, "message": f"Невозможно внести изменения. Статус перевала: {st}"})
-    return JSONResponse(status_code=200, content={"state": 1, "message": "Отправлено успешно"})
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "state": 0,
+                        "message": f"Невозможно внести изменения. Статус перевала: {st}"
+                }
+            )
+    return JSONResponse(
+        status_code=200,
+        content={"state": 1, "message": "Отправлено успешно"}
+    )
 
 
 @app.exception_handler(PerevalExistsException)
 async def pereval_exists_handler(request: Request, exc: PerevalExistsException):
     return JSONResponse(
         status_code=400,
-        content={"status": 400, "message": "Перевал не найден", "id": f"{exc.id}"}
+        content={"status": 400, "message": "Перевал не найден","id": f"{exc.id}"}
     )
 
 

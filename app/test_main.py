@@ -1,14 +1,58 @@
 from fastapi.testclient import TestClient
-from .main import app
+from app.main import app
 
 client = TestClient(app)
 
 
-def test_rood():
+def test_root():
     response = client.get("/")
     assert response.status_code == 200
-    assert response.json() == {"msg": {
-    "method GET by id": "/pereval/{id} - получить данные о перевале по id",
-    "method POST": "/submitData/ - отправить данные о перевале (принимает JSON)",
-    "method GET by email": "submitData/{email] - по email получить список отправленных перевалов"
-}}
+    assert response.json() == {
+    "GET by id": "/pereval/{id} - данные о перевале по id",
+    "POST": "/submitData/ - отправить данные о перевале (принимает JSON)",
+    "GET by email": "submitData/email/{email] - по email получить список отправленных перевалов",
+    "PATCH": "submitData/{id} - отредактировать запись о перевале, принимает JSON"
+    }
+
+
+def test_read_pereval():
+    response = client.get("/pereval/1/")
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "add_time": "2021-09-22T13:18:13",
+        "beauty_title": "пер.",
+        "title": "Пхия",
+        "other_titles": "Триев",
+        "connect": None,
+        "user": {
+            "email": "user@email.ltd",
+            "phone": 79031234567,
+            "fam": "Пупкин",
+            "name": "Василий",
+            "otc": "Иванович"
+        },
+        "coords": {
+            "latitude": "45.3842",
+            "longitude": "7.1525",
+            "height": "1200"
+        },
+        "level": {
+            "winter": "",
+            "summer": "1A",
+            "autumn": "1A",
+            "spring": ""
+        },
+        "status": "pending"
+    }
+
+
+def test_read_pereval_if_not_exists():
+    response = client.get("/pereval/1001/")
+    assert response.status_code == 400
+    assert response.json() == {
+        "status": 400,
+        "message": "Перевал не найден",
+        "id": "1001"
+    }
+    
