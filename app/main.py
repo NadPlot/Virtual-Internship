@@ -144,5 +144,5 @@ async def pereval_exists_handler(request: Request, exc: PerevalExistsException):
 async def email_not_exists_handler(request: Request, exc: EmailNotExistsException):
     return JSONResponse(
         status_code=400,
-        content={"status": 400, "message": "Пользователь с данным email не зарегестрирован"}
+        content={"status": 400, "message": "Пользователь с данным email не зарегистрирован"}
     )
