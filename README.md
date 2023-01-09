@@ -25,7 +25,8 @@ psycopg2-binary~=2.9
 uvicorn~=0.18   
 python-dotenv~=0.20     
 pydantic[email] 
-requests~=2.28  
+requests~=2.28
+httpx
 pytest~=7.2
 
 ## Выполнено:
@@ -219,4 +220,4 @@ API будет доступно по ссылке: http://0.0.0.0:8008/
 
 ## Тесты
 
-    $ sudo docker-compose exec web pytest
+    $ docker-compose exec web pytest

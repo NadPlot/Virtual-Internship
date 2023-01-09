@@ -55,4 +55,65 @@ def test_read_pereval_if_not_exists():
         "message": "Перевал не найден",
         "id": "1001"
     }
-    
+
+
+def test_get_perevel_list_by_user_email():
+    response = client.get("/submitData/email/user@email.ltd")
+    assert response.status_code == 200
+    assert response.json() == {
+        "pereval": [
+            {
+             "id": 1,
+             "title": "Пхия",
+             "other_titles": "Триев",
+             "add_time": "2021-09-22T13:18:13",
+             "status": "pending"
+            }
+        ]
+    }
+
+
+def test_get_perevel_list_by_user_email_not_exists():
+    response = client.get("/submitData/email/sampleuser@sampleemail.com")
+    assert response.status_code == 400
+    assert response.json() == {
+        "status": 400,
+        "message": "Пользователь с данным email не зарегистрирован"
+    }
+
+def test_add_pereval():
+    data = {
+        "beauty_title": "пер.",
+        "title": "Пхия",
+        "other_titles": "Триев2",
+        "connect": "",
+        "add_time": "2021-09-22 13:18:13",
+        "user": {
+            "email": "user@email.ltd",
+            "phone": "75555555",
+            "fam": "Пупкин",
+            "name": "Василий",
+            "otc": "Иванович"
+        },
+        "coords": {
+            "latitude": "45.3842",
+            "longitude": "7.1525",
+            "height": "1200"
+        },
+        "level": {
+            "winter": "",
+            "summer": "1A",
+            "autumn": "1A",
+            "spring": ""
+        },
+        "images": [{"data": "image1", "title": "Сeдловина"},
+            {"data": "image2", "title": "Подъем"}]
+    }
+    response = client.get("/submitData/{data}")
+    assert response.status_code == 200
+    assert response.json() == {
+            "status": 200,
+            "message": "Отправлено успешно",
+            "id": 2
+    }
+
